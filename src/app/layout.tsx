@@ -3,7 +3,7 @@ import { Inter } from "next/font/google";
 import "./globals.css";
 import React, { useState } from "react";
 import Sidenav from "@/components/Sidenav";
-import Leftnav from "@/components/Leftnav";
+
 
 
 const inter = Inter({ subsets: ["latin"] });
