@@ -722,12 +722,12 @@ export default function CodeEditor() {
   const [selectedFile, setSelectedFile] = useState(null);
   const [age, setAge] = useState('');
 
-  const handleChange = (event) => {
+  const handleChange = (event:any) => {
     setAge(event.target.value);
   };
 
   // Function to handle file upload
-  const handleFileUpload = (event) => {
+  const handleFileUpload = (event:any) => {
     const files = Array.from(event.target.files);
     const validFiles = files.filter(file => file.name.endsWith('.ino') || file.name.endsWith('.cpp'));
 
