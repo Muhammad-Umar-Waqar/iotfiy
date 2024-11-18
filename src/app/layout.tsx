@@ -19,13 +19,16 @@ export default function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>)
+
  {
   return (
     <html lang="en">
       <body className={inter.className}>
         {children}
         <Leftnav/>
+        <div className="mt-[50%]">
         <Sidenav/>
+        </div>
       </body>
     </html>
   );

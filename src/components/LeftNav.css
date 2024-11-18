@@ -5,12 +5,13 @@
   
   .custom-sidebar {
     position: fixed;
-    background: rgba(255, 255, 255, 0.2);
+    background: rgba(255, 255, 255, 0.438);
     backdrop-filter: blur(10px);
     font-family: "Roboto", sans-serif;
     width: 80px;
-    top: 24px;
-    left: 24px;
+    height: 100vh;
+    top: 0px;
+    left: 0px;
     border-radius: 10px;
     box-shadow: 0 8px 32px rgba(31, 38, 135, 0.4);
     overflow: hidden;
@@ -47,7 +48,7 @@
     color: #0d1b2a;
   }
   
-  .custom-sidebar .logo {
+  /* .custom-sidebar .logo {
     font-size: 30px;
     font-weight: 900;
     background-image: radial-gradient(
@@ -57,10 +58,10 @@
     );
     color: #e63946;
     padding: 8px 20px;
-  }
+  } */
   
   .custom-sidebar .menu {
-    border-top: 1px solid rgba(13, 27, 42, 0.3);
+    /* border-top: 1px solid rgba(13, 27, 42, 0.3); */
     padding: 16px 0;
     display: flex;
     flex-direction: column;
