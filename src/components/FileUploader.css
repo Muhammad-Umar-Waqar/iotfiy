@@ -1,0 +1,103 @@
+
+/* Explorer container */
+.explorer-container {
+    background-color: #1e1e1e; /* Dark theme */
+    color: #e0e0e0; /* Text color */
+    border-radius: 6px;
+    padding: 1rem;
+    width: 100%;
+    max-width: 400px;
+    height: 80vh;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.3);
+  }
+  
+  /* File input (hidden but styled when clicked) */
+  .file-input {
+    margin-bottom: 1rem;
+    cursor: pointer;
+    color: #cccccc;
+    font-size: 0.9rem;
+  }
+  
+  .file-input:hover {
+    color: #ffffff;
+  }
+  
+  /* Folder and file blocks */
+  .folder-structure {
+    flex: 1;
+    overflow-y: auto; /* Scrollable container */
+    padding-right: 5px;
+    scrollbar-width: thin;
+    scrollbar-color: #555 #1e1e1e;
+  }
+  
+  .folder-structure::-webkit-scrollbar {
+    width: 6px;
+  }
+  
+  .folder-structure::-webkit-scrollbar-thumb {
+    background-color: #555;
+    border-radius: 3px;
+  }
+  
+  .folder-structure::-webkit-scrollbar-track {
+    background-color: #1e1e1e;
+  }
+  
+  /* Folder and file styles */
+  .folder-block {
+    margin-bottom: 0.5rem;
+  }
+  
+  .folder {
+    cursor: pointer;
+    padding: 5px;
+    border-radius: 4px;
+    background-color: #252526;
+    margin-bottom: 3px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    display: block;
+    font-weight: bold;
+  }
+  
+  .folder:hover {
+    background-color: #333333;
+  }
+  
+  .file {
+    padding: 5px;
+    border-radius: 4px;
+    background-color: #252526;
+    margin-left: 1rem;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+  
+  .file a {
+    color: #cccccc;
+    text-decoration: none;
+    font-size: 0.9rem;
+    display: block;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  
+  .file a:hover {
+    color: #ffffff;
+    text-decoration: underline;
+  }
+  
+  /* Nested folders (indented) */
+  .nested {
+    margin-left: 1rem;
+    border-left: 1px solid #444;
+    padding-left: 0.5rem;
+  }
+  

@@ -1875,303 +1875,830 @@
 
 
 
+// 'use client';
+
+// import { useState } from 'react';
+// import Editor from "@monaco-editor/react";
+// import {
+//   Box,
+//   FormControl,
+//   InputLabel,
+//   MenuItem,
+//   Select,
+//   List,
+//   ListItem,
+//   ListItemText,
+//   ListItemIcon,
+//   IconButton,
+// } from '@mui/material';
+// import InsertDriveFileIcon from '@mui/icons-material/InsertDriveFile';
+// import DeleteIcon from '@mui/icons-material/Delete';
+// import AddIcon from '@mui/icons-material/Add';
+
+// export default function CodeEditor() {
+//   const [uploadedFiles, setUploadedFiles] = useState([]);
+//   const [code, setCode] = useState('');
+//   const [selectedFile, setSelectedFile] = useState(null);
+//   const [fileHandles, setFileHandles] = useState([]);
+//   const [age, setAge] = useState('');
+
+
+
+
+
+
+//   const cppCode = `#include <iostream>
+// using namespace std;
+
+// int main() {
+//     return 0;
+// }`;
+
+// const inoCode = `void setup() {
+//   // put your setup code here, to run once:
+// }
+
+// void loop() {
+//   // put your main code here, to run repeatedly:
+// }`;
+
+
+
+
+
+
+
+//   const handleChange = (event) => {
+//     setAge(event.target.value);
+//   };
+
+//   const handleFileOpen = async () => {
+//     try {
+//       const handles = await window.showOpenFilePicker({
+//         multiple: true,
+//         types: [
+//           {
+//             description: 'Code Files',
+//             accept: { 'text/plain': ['.ino', '.cpp'] },
+//           },
+//         ],
+//       });
+//       const allowedExtensions = ['.ino', '.cpp'];
+//       const files = await Promise.all(handles.map(async (handle) => {
+//         const file = await handle.getFile();
+//         const fileExtension = file.name.substring(file.name.lastIndexOf('.')).toLowerCase();
+//         const content = await file.text();
+//         if(allowedExtensions.includes(fileExtension)){
+//           return { name: file.name, content, handle, isNew: false };
+//         }
+//         else{
+//           alert("Files type should be .ino or .cpp")
+//           return null;
+//          }
+//       }));
+//       setFileHandles(handles);
+//       setUploadedFiles(prevFiles => [...prevFiles, ...files]);
+
+//       // Automatically select the first file opened
+  
+//       setSelectedFile(files[0].name);
+//       setCode(files[0].content);
+      
+//     } catch (error) {
+//       console.error('File open error:', error);
+//     }
+//   };
+
+//   const handleFileSelect = (fileName: string) => {
+//     const selected = uploadedFiles.find(file => file.name === fileName);
+//     if (selected) {
+//       setSelectedFile(fileName);
+//       setCode(selected.content);
+//     }
+//   };
+
+
+//   const handleSaveCreatedFile = () => {
+//     const updatedFiles = uploadedFiles.map(file => {
+//       if (file.name === selectedFile) {
+//         return { ...file, content: code };
+//       }
+//       return file;
+//     });
+
+//     setUploadedFiles(updatedFiles);
+
+//     const updatedFile = updatedFiles.find(file => file.name === selectedFile);
+//     if (updatedFile) {
+//       const blob = new Blob([updatedFile.content], { type: "text/plain" });
+//       const link = document.createElement("a");
+//       link.href = URL.createObjectURL(blob);
+//       link.download = updatedFile.name;
+//       link.click();
+//       URL.revokeObjectURL(link.href);
+//     }
+
+//     alert('Newly created file saved locally!');
+//   };
+
+  
+
+//   const handleEditorChange = (value:any) => {
+//     setCode(value);
+//   };
+
+//   const handleSaveUploadedFile = async (file:any) => {
+//     if (!file.handle) {
+//       alert("No file open to save!");
+//       return;
+//     }
+
+//     try {
+//       const writable = await file.handle.createWritable();
+//       await writable.write(code);
+//       await writable.close();
+
+//       setUploadedFiles(prevFiles =>
+//         prevFiles.map(f =>
+//           f.name === file.name ? { ...f, content: code } : f
+//         )
+//       );
+
+//       alert(`File ${file.name} saved successfully!`);
+//     } catch (error) {
+//       console.error("Error saving uploaded file:", error);
+//     }
+//   };
+
+//   const handleSaveAllFiles = async () => {
+//     for (let file of uploadedFiles) {
+//       await handleSaveUploadedFile(file);
+//     }
+//     alert('All files saved successfully!');
+//   };
+
+//   const handleDeleteFile = (fileName : string) => {
+//     setUploadedFiles(prevFiles => prevFiles.filter(file => file.name !== fileName));
+//     if (fileName === selectedFile) {
+//       setSelectedFile(null);
+//       setCode('');
+//     }
+//     alert(`File ${fileName} deleted!`);
+//   };
+
+//   const handleCreateNewFile = () => {
+//     const newFileName = window.prompt("Enter a name for the new file:");
+    
+//     // Validate the filename
+//     if (!newFileName || newFileName.trim() === "") {
+//       alert("Filename cannot be empty!");
+//       return;
+//     }
+  
+//     // Check for duplicate filenames
+//     if (uploadedFiles.some(file => file.name === newFileName)) {
+//       alert("A file with this name already exists!");
+//       return;
+//     }
+  
+//     const newFile = { name: newFileName.trim(), content: newFileName.includes(".cpp") ? cppCode  : inoCode, isNew: true };
+  
+//     setUploadedFiles(prevFiles => [...prevFiles, newFile]);
+//     setSelectedFile(newFileName.trim());
+//     setCode(newFile.content);
+//   };
+
+//   const renderFileExplorer = () => {
+//     return uploadedFiles.map(file => (
+//       <ListItem
+//         key={file.name}
+//         button
+//         onClick={() => handleFileSelect(file.name)}
+//         className="flex justify-between items-center "
+//       >
+//         <div className="flex items-center">
+//           <ListItemIcon>
+//             <InsertDriveFileIcon className="text-white" />
+//           </ListItemIcon>
+//           <ListItemText className="text-white" primary={file.name} />
+//         </div>
+//         <IconButton
+//           edge="end"
+//           aria-label="delete"
+//           onClick={(e) => {
+//             e.stopPropagation();
+//             handleDeleteFile(file.name);
+//           }}
+//         >
+//           <DeleteIcon className="text-white" />
+//         </IconButton>
+//       </ListItem>
+//     ));
+//   };
+
+//   return (
+//     <div className="flex items-center justify-center">
+//       <div className="h-[90vh] w-[70vw] md:w-[80vw] lg:w-[90vw] md:px-20">
+//         <div className="flex items-center justify-between">
+//           <h1>CODE EDITOR</h1>
+//           <div className="flex items-center gap-3 my-2">
+//             <Box sx={{ minWidth: 120 }}>
+//               <FormControl sx={{ minWidth: 120 }} size="small">
+//                 <InputLabel id="demo-simple-select-label">Vers.</InputLabel>
+//                 <Select
+//                   labelId="demo-simple-select-label"
+//                   id="demo-simple-select"
+//                   value={age}
+//                   label="Age"
+//                   onChange={handleChange}
+//                 >
+//                   <MenuItem value={10}>v1</MenuItem>
+//                   <MenuItem value={20}>v2</MenuItem>
+//                   <MenuItem value={30}>v3</MenuItem>
+//                 </Select>
+//               </FormControl>
+//             </Box>
+//             <button
+//               onClick={() =>
+//                 uploadedFiles.find(file => file.name === selectedFile)?.isNew
+//                   ? handleSaveCreatedFile()
+//                   : handleSaveUploadedFile(uploadedFiles.find(file => file.name === selectedFile))
+//               }
+//               className="px-4 py-2 bg-gray-500 text-white rounded hover:bg-gray-600"
+//             >
+//               Save Code
+//             </button>
+//             <button
+//               onClick={handleSaveAllFiles}
+//               className="px-4 py-2 bg-green-500 text-white rounded hover:bg-green-600"
+//             >
+//               Save All Files
+//             </button>
+//           </div>
+//         </div>
+
+//         <h1 className="text-lg font-semibold">
+//           {selectedFile ? `Editing: ${selectedFile}` : "No File Selected"}
+//         </h1>
+
+//         <div className="flex justify-between h-[90vh]">
+//           <div className="bg-stone-900 p-3 w-[25vw] overflow-y-auto">
+//             <h2 className="text-white">Uploaded Files</h2>
+//             <button
+//               onClick={handleFileOpen}
+//               className="mb-4 px-4 py-2 bg-gray-500 text-white rounded hover:bg-gray-600"
+//             >
+//               Open File(s)
+//             </button>
+//             <button
+//               onClick={handleCreateNewFile}
+//               className="mb-4 px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600"
+//             >
+//               <AddIcon /> Create File
+//             </button>
+//             <List >{renderFileExplorer()}</List>
+//           </div>
+
+//           <div className="w-full">
+//             <Editor
+//               defaultLanguage="cpp"
+//               value={code}
+//               theme="vs-dark"
+//               options={{
+//                 minimap: { enabled: false },
+//               }}
+//               onChange={handleEditorChange}
+//             />
+//           </div>
+//         </div>
+//       </div>
+//     </div>
+//   );
+// }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+// 'use client';
+
+// import React, { useState } from 'react';
+// import Editor from "@monaco-editor/react";
+// import JSZip from 'jszip';
+// import {
+//   IconButton,
+// } from '@mui/material';
+// import InsertDriveFileIcon from '@mui/icons-material/InsertDriveFile';
+// import DeleteIcon from '@mui/icons-material/Delete';
+// import AddIcon from '@mui/icons-material/Add';
+// import './FileUploader.css';
+
+// const CodeEditor = () => {
+//   const [folderStructure, setFolderStructure] = useState({});
+//   const [collapsedFolders, setCollapsedFolders] = useState({});
+//   const [uploadedFiles, setUploadedFiles] = useState([]);
+//   const [code, setCode] = useState('');
+//   const [selectedFile, setSelectedFile] = useState(null);
+
+//   const cppCode = `#include <iostream>\nusing namespace std;\n\nint main() {\n    return 0;\n}`;
+//   const inoCode = `void setup() {\n  // put your setup code here, to run once:\n}\n\nvoid loop() {\n  // put your main code here, to run repeatedly:\n}`;
+
+//   // Create folder structure from uploaded files
+//   const createFolderStructure = (files) => {
+//     const tree = {};
+//     files.forEach((file) => {
+//       const pathParts = file.webkitRelativePath.split('/');
+//       let current = tree;
+//       pathParts.forEach((part, index) => {
+//         if (!current[part]) {
+//           current[part] = index === pathParts.length - 1 ? file : {};
+//         }
+//         current = current[part];
+//       });
+//     });
+//     return tree;
+//   };
+
+//   const handleFileChange = (event) => {
+//     const files = Array.from(event.target.files);
+//     const structure = createFolderStructure(files);
+//     setFolderStructure(structure);
+
+//     const flatFiles = files.map(file => ({
+//       name: file.name,
+//       content: URL.createObjectURL(file),
+//       file,
+//     }));
+//     setUploadedFiles((prevFiles) => [...prevFiles, ...flatFiles]);
+//   };
+
+//   const handleFileSelect = (fileName) => {
+//     const selected = uploadedFiles.find(file => file.name === fileName);
+//     if (selected) {
+//       setSelectedFile(fileName);
+//       setCode(selected.content);
+//     }
+//   };
+
+//   const handleSaveCreatedFile = () => {
+//     const updatedFiles = uploadedFiles.map(file => {
+//       if (file.name === selectedFile) {
+//         return { ...file, content: code };
+//       }
+//       return file;
+//     });
+
+//     setUploadedFiles(updatedFiles);
+
+//     const updatedFile = updatedFiles.find(file => file.name === selectedFile);
+//     if (updatedFile) {
+//       const blob = new Blob([updatedFile.content], { type: "text/plain" });
+//       const link = document.createElement("a");
+//       link.href = URL.createObjectURL(blob);
+//       link.download = updatedFile.name;
+//       link.click();
+//       URL.revokeObjectURL(link.href);
+//     }
+
+//     alert('File saved locally!');
+//   };
+
+//   const handleCreateNewFile = () => {
+//     const newFileName = window.prompt("Enter a name for the new file:");
+//     if (!newFileName || newFileName.trim() === "") {
+//       alert("Filename cannot be empty!");
+//       return;
+//     }
+
+//     if (uploadedFiles.some(file => file.name === newFileName)) {
+//       alert("A file with this name already exists!");
+//       return;
+//     }
+
+//     const newFile = {
+//       name: newFileName.trim(),
+//       content: newFileName.includes(".cpp") ? cppCode : inoCode,
+//       isNew: true,
+//     };
+
+//     setUploadedFiles((prevFiles) => [...prevFiles, newFile]);
+//     setSelectedFile(newFileName.trim());
+//     setCode(newFile.content);
+//   };
+
+//   const handleDeleteFile = (fileName) => {
+//     setUploadedFiles((prevFiles) => prevFiles.filter(file => file.name !== fileName));
+//     if (fileName === selectedFile) {
+//       setSelectedFile(null);
+//       setCode('');
+//     }
+//     alert(`File ${fileName} deleted!`);
+//   };
+
+//   const handleSaveAllFiles = () => {
+//     const zip = new JSZip();
+//     uploadedFiles.forEach(file => {
+//       zip.file(file.name, file.content || "");
+//     });
+
+//     zip.generateAsync({ type: 'blob' }).then((content) => {
+//       const link = document.createElement('a');
+//       link.href = URL.createObjectURL(content);
+//       link.download = 'project.zip';
+//       link.click();
+//       URL.revokeObjectURL(link.href);
+//     });
+
+//     alert('All files saved as a ZIP!');
+//   };
+
+//   // Toggle folder collapse/expand
+//   const toggleFolder = (folderPath) => {
+//     setCollapsedFolders((prev) => ({
+//       ...prev,
+//       [folderPath]: !prev[folderPath],
+//     }));
+//   };
+
+//   // Render folder structure recursively
+//   const renderFolderStructure = (structure, path = '') => {
+//     return Object.keys(structure).map((key) => {
+//       const item = structure[key];
+//       const fullPath = path ? `${path}/${key}` : key;
+
+//       if (item instanceof File) {
+//         const fileURL = URL.createObjectURL(item);
+//         return (
+//           <div key={fullPath} className="file" title={key}>
+//             <a href={fileURL} target="_blank" rel="noopener noreferrer">
+//               {key}
+//             </a>
+//           </div>
+//         );
+//       } else {
+//         const isCollapsed = collapsedFolders[fullPath];
+//         return (
+//           <div key={fullPath} className="folder-block">
+//             <div
+//               className="folder"
+//               onClick={() => toggleFolder(fullPath)}
+//               title={key}
+//             >
+//               {isCollapsed ? '📂' : '📁'} {key}
+//             </div>
+//             {!isCollapsed && (
+//               <div className="nested">
+//                 {renderFolderStructure(item, fullPath)}
+//               </div>
+//             )}
+//           </div>
+//         );
+//       }
+//     });
+//   };
+
+//   const renderFileExplorer = () => {
+//     return (
+//       <div className="file-explorer">
+//         {renderFolderStructure(folderStructure)}
+//       </div>
+//     );
+//   };
+
+//   return (
+//     <div className="flex items-center justify-center">
+//       <div className="h-[90vh] w-[70vw]">
+//         <div className="flex items-center justify-between">
+//           <h1>Code Editor</h1>
+//           <div className="flex items-center gap-3">
+//             <button
+//               onClick={handleSaveCreatedFile}
+//               className="px-4 py-2 bg-gray-500 text-white rounded"
+//             >
+//               Save Code
+//             </button>
+//             <button
+//               onClick={handleSaveAllFiles}
+//               className="px-4 py-2 bg-green-500 text-white rounded"
+//             >
+//               Save All Files
+//             </button>
+//           </div>
+//         </div>
+//         <div className="flex justify-between h-[90vh]">
+//           <div className="bg-stone-900 p-3 w-[25vw] overflow-y-auto">
+//             <input
+//               type="file"
+//               className="file-input"
+//               webkitdirectory="true"
+//               mozdirectory="true"
+//               onChange={handleFileChange}
+//               multiple
+//             />
+//             <button
+//               onClick={handleCreateNewFile}
+//               className="px-4 py-2 bg-blue-500 text-white rounded"
+//             >
+//               <AddIcon /> Create File
+//             </button>
+//             {renderFileExplorer()}
+//           </div>
+//           <div className="w-full">
+//             <Editor
+//               defaultLanguage="cpp"
+//               value={code}
+//               theme="vs-dark"
+//               options={{ minimap: { enabled: false } }}
+//               onChange={setCode}
+//             />
+//           </div>
+//         </div>
+//       </div>
+//     </div>
+//   );
+// };
+
+// export default CodeEditor;
+
+
+
+
+
+
+
+
+
+
+
+
 'use client';
 
-import { useState } from 'react';
-import Editor from "@monaco-editor/react";
-import {
-  Box,
-  FormControl,
-  InputLabel,
-  MenuItem,
-  Select,
-  List,
-  ListItem,
-  ListItemText,
-  ListItemIcon,
-  IconButton,
-} from '@mui/material';
-import InsertDriveFileIcon from '@mui/icons-material/InsertDriveFile';
-import DeleteIcon from '@mui/icons-material/Delete';
+import React, { useState } from 'react';
+import Editor from '@monaco-editor/react';
+import JSZip from 'jszip';
 import AddIcon from '@mui/icons-material/Add';
+import DeleteIcon from '@mui/icons-material/Delete';
+import SaveIcon from '@mui/icons-material/Save';
+import './FileUploader.css';
 
-export default function CodeEditor() {
+const CodeEditor = () => {
+  const [folderStructure, setFolderStructure] = useState({});
+  const [collapsedFolders, setCollapsedFolders] = useState({});
   const [uploadedFiles, setUploadedFiles] = useState([]);
   const [code, setCode] = useState('');
   const [selectedFile, setSelectedFile] = useState(null);
-  const [fileHandles, setFileHandles] = useState([]);
-  const [age, setAge] = useState('');
 
+  const cppCode = `#include <iostream>\nusing namespace std;\n\nint main() {\n    return 0;\n}`;
+  const inoCode = `void setup() {\n  // put your setup code here, to run once:\n}\n\nvoid loop() {\n  // put your main code here, to run repeatedly:\n}`;
 
-
-
-
-
-  const cppCode = `#include <iostream>
-using namespace std;
-
-int main() {
-    return 0;
-}`;
-
-const inoCode = `void setup() {
-  // put your setup code here, to run once:
-}
-
-void loop() {
-  // put your main code here, to run repeatedly:
-}`;
-
-
-
-
-
-
-
-  const handleChange = (event) => {
-    setAge(event.target.value);
-  };
-
-  const handleFileOpen = async () => {
-    try {
-      const handles = await window.showOpenFilePicker({
-        multiple: true,
-        types: [
-          {
-            description: 'Code Files',
-            accept: { 'text/plain': ['.ino', '.cpp'] },
-          },
-        ],
-      });
-      const allowedExtensions = ['.ino', '.cpp'];
-      const files = await Promise.all(handles.map(async (handle) => {
-        const file = await handle.getFile();
-        const fileExtension = file.name.substring(file.name.lastIndexOf('.')).toLowerCase();
-        const content = await file.text();
-        if(allowedExtensions.includes(fileExtension)){
-          return { name: file.name, content, handle, isNew: false };
-        }
-        else{
-          alert("Files type should be .ino or .cpp")
-          return null;
-         }
-      }));
-      setFileHandles(handles);
-      setUploadedFiles(prevFiles => [...prevFiles, ...files]);
-
-      // Automatically select the first file opened
-  
-      setSelectedFile(files[0].name);
-      setCode(files[0].content);
-      
-    } catch (error) {
-      console.error('File open error:', error);
-    }
-  };
-
-  const handleFileSelect = (fileName: string) => {
-    const selected = uploadedFiles.find(file => file.name === fileName);
-    if (selected) {
-      setSelectedFile(fileName);
-      setCode(selected.content);
-    }
-  };
-
-
-  const handleSaveCreatedFile = () => {
-    const updatedFiles = uploadedFiles.map(file => {
-      if (file.name === selectedFile) {
-        return { ...file, content: code };
-      }
-      return file;
+  const handleFileChange = (event) => {
+    const files = Array.from(event.target.files);
+    files.forEach((file) => {
+      const pathParts = file.webkitRelativePath.split('/');
+      addFileToFolderStructure(pathParts, file);
+      const reader = new FileReader();
+      reader.onload = () => {
+        const newFile = { name: file.name, content: reader.result, file };
+        setUploadedFiles((prevFiles) => [...prevFiles, newFile]);
+      };
+      reader.readAsText(file);
     });
+  };
 
-    setUploadedFiles(updatedFiles);
 
-    const updatedFile = updatedFiles.find(file => file.name === selectedFile);
-    if (updatedFile) {
-      const blob = new Blob([updatedFile.content], { type: "text/plain" });
-      const link = document.createElement("a");
-      link.href = URL.createObjectURL(blob);
-      link.download = updatedFile.name;
-      link.click();
-      URL.revokeObjectURL(link.href);
+  const addFileToFolderStructure = (pathParts, file) => {
+    setFolderStructure((prev) => {
+      const newStructure = { ...prev };
+      let current = newStructure;
+      console.log("Current Structure", current);
+      console.log("Path Parts", pathParts);
+      
+      // Navigate or create folders in the structure
+      pathParts.forEach((part, index) => {
+        
+        if (!current[part]) {
+          // Only add the file at the last path part
+          if (index === pathParts.length - 1) {
+            current[part] = { file }; // Add file at the final part
+          } else {
+            current[part] = {}; // Create a new folder object
+          }
+        }
+        current = current[part];
+      });
+      
+      return newStructure;
+    });
+  };
+
+  const handleFileSelect = (fileName) => {
+    const file = uploadedFiles.find((f) => f.name === fileName);
+    if (file) {
+      setSelectedFile(fileName);
+      setCode(file.content);
     }
-
-    alert('Newly created file saved locally!');
   };
 
-  
-
-  const handleEditorChange = (value:any) => {
-    setCode(value);
-  };
-
-  const handleSaveUploadedFile = async (file:any) => {
-    if (!file.handle) {
-      alert("No file open to save!");
+  const handleCreateNewFile = (folderPath) => {
+    const newFileName = window.prompt('Enter a name for the new file:');
+    if (!newFileName || newFileName.trim() === '') {
+      alert('Filename cannot be empty!');
       return;
     }
 
-    try {
-      const writable = await file.handle.createWritable();
-      await writable.write(code);
-      await writable.close();
+    if (uploadedFiles.some((file) => file.name === newFileName)) {
+      alert('A file with this name already exists!');
+      return;
+    }
 
-      setUploadedFiles(prevFiles =>
-        prevFiles.map(f =>
-          f.name === file.name ? { ...f, content: code } : f
-        )
-      );
+    const newFileContent = newFileName.includes('.cpp') ? cppCode : inoCode;
+    const pathParts = folderPath ? folderPath.split('/').concat(newFileName) : [newFileName];
+    const newFile = { name: newFileName, content: newFileContent };
 
-      alert(`File ${file.name} saved successfully!`);
-    } catch (error) {
-      console.error("Error saving uploaded file:", error);
+    // Add file to the folder structure
+    addFileToFolderStructure(pathParts, newFile);
+
+    // Add the new file to uploaded files
+    setUploadedFiles((prevFiles) => [...prevFiles, newFile]);
+    setSelectedFile(newFileName);
+    setCode(newFileContent);
+  };
+
+  const handleDeleteFile = (fileName) => {
+    const confirmDelete = window.confirm(`Are you sure you want to delete "${fileName}"?`);
+    if (confirmDelete) {
+      setUploadedFiles((prevFiles) => prevFiles.filter((file) => file.name !== fileName));
+      setFolderStructure((prev) => {
+        const removeFileFromStructure = (structure) => {
+          Object.keys(structure).forEach((key) => {
+            if (structure[key] instanceof Object) {
+              if (structure[key].file && structure[key].file.name === fileName) {
+                delete structure[key];
+              } else {
+                removeFileFromStructure(structure[key]);
+              }
+            }
+          });
+        };
+        const newStructure = { ...prev };
+        removeFileFromStructure(newStructure);
+        return newStructure;
+      });
+
+      if (selectedFile === fileName) {
+        setSelectedFile(null);
+        setCode('');
+      }
     }
   };
 
   const handleSaveAllFiles = async () => {
-    for (let file of uploadedFiles) {
-      await handleSaveUploadedFile(file);
-    }
-    alert('All files saved successfully!');
+    const zip = new JSZip();
+
+    const addToZip = (structure, zipFolder) => {
+      Object.keys(structure).forEach((key) => {
+        const item = structure[key];
+        if (item instanceof Object && item.file) {
+          zipFolder.file(key, item.file.content || '');
+        } else if (typeof item === 'object') {
+          const newFolder = zipFolder.folder(key);
+          addToZip(item, newFolder);
+        }
+      });
+    };
+
+    addToZip(folderStructure, zip);
+    const content = await zip.generateAsync({ type: 'blob' });
+    const link = document.createElement('a');
+    link.href = URL.createObjectURL(content);
+    link.download = 'project.zip';
+    link.click();
   };
 
-  const handleDeleteFile = (fileName : string) => {
-    setUploadedFiles(prevFiles => prevFiles.filter(file => file.name !== fileName));
-    if (fileName === selectedFile) {
-      setSelectedFile(null);
-      setCode('');
-    }
-    alert(`File ${fileName} deleted!`);
-  };
+  const renderFolderStructure = (structure, path = '') => {
+    return Object.keys(structure).map((key) => {
+      const item = structure[key];
+      const fullPath = path ? `${path}/${key}` : key;
 
-  const handleCreateNewFile = () => {
-    const newFileName = window.prompt("Enter a name for the new file:");
-    
-    // Validate the filename
-    if (!newFileName || newFileName.trim() === "") {
-      alert("Filename cannot be empty!");
-      return;
-    }
-  
-    // Check for duplicate filenames
-    if (uploadedFiles.some(file => file.name === newFileName)) {
-      alert("A file with this name already exists!");
-      return;
-    }
-  
-    const newFile = { name: newFileName.trim(), content: newFileName.includes(".cpp") ? cppCode  : inoCode, isNew: true };
-  
-    setUploadedFiles(prevFiles => [...prevFiles, newFile]);
-    setSelectedFile(newFileName.trim());
-    setCode(newFile.content);
-  };
-
-  const renderFileExplorer = () => {
-    return uploadedFiles.map(file => (
-      <ListItem
-        key={file.name}
-        button
-        onClick={() => handleFileSelect(file.name)}
-        className="flex justify-between items-center "
-      >
-        <div className="flex items-center">
-          <ListItemIcon>
-            <InsertDriveFileIcon className="text-white" />
-          </ListItemIcon>
-          <ListItemText className="text-white" primary={file.name} />
-        </div>
-        <IconButton
-          edge="end"
-          aria-label="delete"
-          onClick={(e) => {
-            e.stopPropagation();
-            handleDeleteFile(file.name);
-          }}
-        >
-          <DeleteIcon className="text-white" />
-        </IconButton>
-      </ListItem>
-    ));
+      if (item.file) {
+        return (
+          <div key={fullPath} className="file flex items-center">
+            <span onClick={() => handleFileSelect(item.file.name)} className="cursor-pointer">
+              {key}
+            </span>
+            <DeleteIcon
+              className="ml-2 cursor-pointer text-red-500"
+              onClick={() => handleDeleteFile(item.file.name)}
+            />
+          </div>
+        );
+      } else {
+        const isCollapsed = collapsedFolders[fullPath];
+        return (
+          <div key={fullPath} className="folder-block">
+            <div
+              className="folder flex items-center cursor-pointer"
+              onClick={() =>
+                setCollapsedFolders((prev) => ({
+                  ...prev,
+                  [fullPath]: !isCollapsed,
+                }))
+              }
+            >
+              {isCollapsed ? '📂' : '📁'} {key}
+              <AddIcon
+                className="ml-2 text-green-500 cursor-pointer"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  handleCreateNewFile(fullPath);
+                }}
+              />
+            </div>
+            {!isCollapsed && (
+              <div className="nested pl-4">
+                {renderFolderStructure(item, fullPath)}
+              </div>
+            )}
+          </div>
+        );
+      }
+    });
   };
 
   return (
     <div className="flex items-center justify-center">
-      <div className="h-[90vh] w-[70vw] md:w-[80vw] lg:w-[90vw] md:px-20">
-        <div className="flex items-center justify-between">
-          <h1>CODE EDITOR</h1>
-          <div className="flex items-center gap-3 my-2">
-            <Box sx={{ minWidth: 120 }}>
-              <FormControl sx={{ minWidth: 120 }} size="small">
-                <InputLabel id="demo-simple-select-label">Vers.</InputLabel>
-                <Select
-                  labelId="demo-simple-select-label"
-                  id="demo-simple-select"
-                  value={age}
-                  label="Age"
-                  onChange={handleChange}
-                >
-                  <MenuItem value={10}>v1</MenuItem>
-                  <MenuItem value={20}>v2</MenuItem>
-                  <MenuItem value={30}>v3</MenuItem>
-                </Select>
-              </FormControl>
-            </Box>
-            <button
-              onClick={() =>
-                uploadedFiles.find(file => file.name === selectedFile)?.isNew
-                  ? handleSaveCreatedFile()
-                  : handleSaveUploadedFile(uploadedFiles.find(file => file.name === selectedFile))
-              }
-              className="px-4 py-2 bg-gray-500 text-white rounded hover:bg-gray-600"
-            >
-              Save Code
-            </button>
-            <button
-              onClick={handleSaveAllFiles}
-              className="px-4 py-2 bg-green-500 text-white rounded hover:bg-green-600"
-            >
-              Save All Files
-            </button>
-          </div>
+      <div className="h-[90vh] w-[70vw]">
+        <div className="flex items-center justify-between mb-4">
+          <h1 className="text-lg font-bold">Code Editor</h1>
+          <button
+            onClick={handleSaveAllFiles}
+            className="bg-green-500 text-white px-4 py-2 rounded flex items-center"
+          >
+            <SaveIcon className="mr-2" />
+            Save All Files
+          </button>
         </div>
-
-        <h1 className="text-lg font-semibold">
-          {selectedFile ? `Editing: ${selectedFile}` : "No File Selected"}
-        </h1>
-
-        <div className="flex justify-between h-[90vh]">
+        <div className="flex justify-between h-full">
           <div className="bg-stone-900 p-3 w-[25vw] overflow-y-auto">
-            <h2 className="text-white">Uploaded Files</h2>
-            <button
-              onClick={handleFileOpen}
-              className="mb-4 px-4 py-2 bg-gray-500 text-white rounded hover:bg-gray-600"
-            >
-              Open File(s)
-            </button>
-            <button
-              onClick={handleCreateNewFile}
-              className="mb-4 px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600"
-            >
-              <AddIcon /> Create File
-            </button>
-            <List >{renderFileExplorer()}</List>
+            <input
+              type="file"
+              className="file-input mb-3"
+              webkitdirectory="true"
+              mozdirectory="true"
+              onChange={handleFileChange}
+              multiple
+            />
+            {renderFolderStructure(folderStructure)}
           </div>
-
           <div className="w-full">
             <Editor
               defaultLanguage="cpp"
               value={code}
               theme="vs-dark"
-              options={{
-                minimap: { enabled: false },
-              }}
-              onChange={handleEditorChange}
+              options={{ minimap: { enabled: false } }}
+              onChange={setCode}
             />
           </div>
         </div>
       </div>
     </div>
   );
-}
+};
+
+export default CodeEditor;
